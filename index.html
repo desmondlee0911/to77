@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>New Year 2026 · Peggy 琣淇</title>
+  <style>
+    :root{
+      --bg1:#050012;
+      --bg2:#090028;
+      --glow:#ff5fd7;
+      --glow2:#5fe3ff;
+      --gold:#ffd36a;
+    }
+    html,body{height:100%; margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, "PingFang SC","Microsoft YaHei", sans-serif; background: radial-gradient(1200px 800px at 50% 120%, var(--bg2), var(--bg1)); overflow:hidden;}
+    canvas{position:fixed; inset:0; width:100%; height:100%;}
+
+    .wrap{
+      position:fixed; inset:0;
+      display:flex; align-items:center; justify-content:center;
+      pointer-events:none;
+    }
+    .card{
+      pointer-events:auto;
+      width:min(760px, 92vw);
+      padding:28px 24px;
+      border-radius:22px;
+      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
+      border: 1px solid rgba(255,255,255,.18);
+      box-shadow: 0 24px 80px rgba(0,0,0,.55);
+      backdrop-filter: blur(10px);
+      text-align:center;
+    }
+    .badge{
+      display:inline-flex; gap:10px; align-items:center; justify-content:center;
+      padding:8px 14px;
+      border-radius:999px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.16);
+      color: rgba(255,255,255,.85);
+      font-weight:600;
+      letter-spacing:.4px;
+      margin-bottom:14px;
+    }
+    .spark{
+      width:10px; height:10px; border-radius:50%;
+      background: radial-gradient(circle at 30% 30%, #fff, var(--glow));
+      box-shadow: 0 0 18px var(--glow), 0 0 36px rgba(255,95,215,.6);
+      animation: pulse 1.2s infinite ease-in-out;
+    }
+    @keyframes pulse{ 0%,100%{transform:scale(1)} 50%{transform:scale(1.35)} }
+
+    h1{
+      margin:0;
+      font-size: clamp(32px, 5vw, 54px);
+      line-height:1.05;
+      color:#fff;
+      text-shadow:
+        0 0 18px rgba(255,95,215,.55),
+        0 0 34px rgba(95,227,255,.35);
+      letter-spacing:.5px;
+    }
+    .name{
+      display:block;
+      margin-top:10px;
+      font-size: clamp(42px, 7.5vw, 74px);
+      font-weight:900;
+      background: linear-gradient(90deg, var(--glow), #fff, var(--glow2));
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+      filter: drop-shadow(0 0 18px rgba(255,95,215,.35));
+    }
+    .msg{
+      margin:14px auto 0;
+      max-width: 60ch;
+      color: rgba(255,255,255,.90);
+      font-size: clamp(14px, 2.2vw, 18px);
+      line-height:1.75;
+    }
+    .msg b{color: rgba(255,211,106,.95)}
+    .hint{
+      margin-top:18px;
+      display:flex; justify-content:center; gap:10px; flex-wrap:wrap;
+    }
+    button{
+      pointer-events:auto;
+      border:none;
+      padding:12px 16px;
+      border-radius:14px;
+      background: linear-gradient(90deg, rgba(255,95,215,.9), rgba(95,227,255,.9));
+      color:#070018;
+      font-weight:800;
+      cursor:pointer;
+      box-shadow: 0 14px 40px rgba(255,95,215,.18);
+      transition: transform .12s ease, filter .12s ease;
+    }
+    button:active{transform: translateY(1px) scale(.99)}
+    button:hover{filter: brightness(1.05)}
+    .mini{
+      background: rgba(255,255,255,.08);
+      color: rgba(255,255,255,.9);
+      border: 1px solid rgba(255,255,255,.16);
+      font-weight:700;
+    }
+    .footer{
+      margin-top:14px;
+      color: rgba(255,255,255,.58);
+      font-size: 12px;
+      line-height:1.5;
+    }
+
+    .floating{
+      position:fixed; left:50%; top:10%;
+      transform: translateX(-50%);
+      color: rgba(255,255,255,.86);
+      font-weight:900;
+      letter-spacing: 3px;
+      text-shadow: 0 0 18px rgba(255,211,106,.35);
+      opacity: .0;
+      transition: opacity .6s ease, transform .6s ease;
+      pointer-events:none;
+      text-align:center;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(0,0,0,.20);
+      border: 1px solid rgba(255,255,255,.12);
+      backdrop-filter: blur(8px);
+    }
+    .floating.show{
+      opacity: 1;
+      transform: translateX(-50%) translateY(10px);
+    }
+  </style>
+</head>
+<body>
+  <canvas id="c"></canvas>
+
+  <div class="floating" id="floating">✨ 2026 · Peggy 琣淇 ✨</div>
+
+  <div class="wrap">
+    <div class="card">
+      <div class="badge"><span class="spark"></span> New Year 2026 · 专属惊喜</div>
+
+      <h1>献给你，<span class="name" id="name">Peggy 琣淇</span></h1>
+
+      <div class="msg" id="msg">
+        <b>Peggy（琣淇）</b>，2026 的第一束烟花，想让它只为你盛开。<br/>
+        愿你新的一年：<b>心里有光</b>、<b>眼里有梦</b>、<b>身边有爱</b>。<br/>
+        每一个普通的日子，都能被你过成闪闪发亮的那种。<br/>
+        还有——愿你的好运，从今晚开始<b>一路开挂</b>到 2026 的每一天。✨
+      </div>
+
+      <div class="hint">
+        <button id="surpriseBtn">点我 · 引爆 Peggy 专属烟花 🎆</button>
+        <button class="mini" id="muteBtn">声音：开</button>
+        <button class="mini" id="themeBtn">换一套烟花</button>
+      </div>
+
+      <div class="footer">
+        小提示：可直接点屏幕任何位置放烟花；连点会更“震撼”。<br/>
+        想更有仪式感：把手机亮度调高、全屏打开、然后递给她。
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  const canvas = document.getElementById('c');
+  const ctx = canvas.getContext('2d');
+  let W, H, DPR;
+
+  function resize(){
+    DPR = Math.min(2, window.devicePixelRatio || 1);
+    W = canvas.width = Math.floor(innerWidth * DPR);
+    H = canvas.height = Math.floor(innerHeight * DPR);
+    canvas.style.width = innerWidth + 'px';
+    canvas.style.height = innerHeight + 'px';
+  }
+  addEventListener('resize', resize, {passive:true});
+  resize();
+
+  // ===== Audio (optional) =====
+  let audioOn = true;
+  let audioCtx = null;
+  function ping(freq=440, dur=0.08){
+    if(!audioOn) return;
+    try{
+      if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const t = audioCtx.currentTime;
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type = 'sine';
+      o.frequency.setValueAtTime(freq, t);
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.18, t + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g); g.connect(audioCtx.destination);
+      o.start(t); o.stop(t + dur + 0.02);
+    }catch(e){}
+  }
+
+  const rnd = (a,b)=>a+Math.random()*(b-a);
+  const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+
+  // 更“梦幻+女生向”的配色：粉/青/金/白
+  const palettes = [
+    ['#ff5fd7','#5fe3ff','#ffd36a','#ffffff'],
+    ['#ff77aa','#7cf9ff','#fff1a6','#ffffff'],
+    ['#b517ff','#ffb703','#00f5d4','#ffffff'],
+    ['#ff4d6d','#00d1ff','#ffd36a','#ffffff']
+  ];
+  let palette = palettes[0];
+
+  const gravity = 0.055;
+  const air = 0.992;
+
+  const sparks = [];
+  const rockets = [];
+
+  function colorPick(){ return palette[(Math.random()*palette.length)|0]; }
+
+  function rocket(x, y, power=1){
+    rockets.push({
+      x, y,
+      vx: rnd(-0.8,0.8) * DPR,
+      vy: rnd(-11,-14) * DPR * power,
+      col: colorPick(),
+      power
+    });
+    ping(rnd(220,360), 0.06);
+  }
+
+  function explode(x, y, baseCol, power=1){
+    const count = Math.floor(rnd(110, 170) * power);
+    for(let i=0;i<count;i++){
+      const ang = Math.random()*Math.PI*2;
+      const spd = rnd(1.6, 6.8) * DPR * power;
+      sparks.push({
+        x, y,
+        vx: Math.cos(ang)*spd,
+        vy: Math.sin(ang)*spd,
+        life: rnd(50, 95),
+        age: 0,
+        col: (Math.random()<0.78 ? baseCol : colorPick()),
+        size: rnd(1.0, 2.2) * DPR,
+        tw: Math.random()<0.22,
+        trail: []
+      });
+    }
+    ping(rnd(520,880), 0.08);
+  }
+
+  function heart(x, y){
+    const baseCol = '#ff5fd7';
+    const points = 170;
+    for(let i=0;i<points;i++){
+      const t = (i/points) * Math.PI*2;
+      const hx = 16*Math.pow(Math.sin(t),3);
+      const hy = 13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t);
+      const spd = rnd(0.18,0.29) * DPR;
+      sparks.push({
+        x, y,
+        vx: hx*spd,
+        vy: -hy*spd,
+        life: rnd(75, 120),
+        age: 0,
+        col: (Math.random()<0.88 ? baseCol : '#fff'),
+        size: rnd(1.1, 2.5) * DPR,
+        tw: Math.random()<0.28,
+        trail: []
+      });
+    }
+    ping(988, 0.09);
+  }
+
+  function nameBurst(x, y){
+    // “名字专属感”：在中间多爆几次 + 心形
+    for(let i=0;i<2;i++){
+      explode(x + rnd(-60,60)*DPR, y + rnd(-40,40)*DPR, '#5fe3ff', 1.2);
+    }
+    heart(x, y);
+  }
+
+  // ambience
+  for(let i=0;i<3;i++){
+    rocket(innerWidth*DPR*rnd(0.2,0.8), H*0.98, rnd(0.9,1.1));
+  }
+
+  function loop(){
+    requestAnimationFrame(loop);
+    ctx.fillStyle = 'rgba(5,0,18,0.18)';
+    ctx.fillRect(0,0,W,H);
+
+    if(Math.random()<0.08){
+      const sx = Math.random()*W, sy = Math.random()*H*0.65;
+      ctx.fillStyle = 'rgba(255,255,255,0.08)';
+      ctx.fillRect(sx,sy,1*DPR,1*DPR);
+    }
+
+    for(let i=rockets.length-1;i>=0;i--){
+      const r = rockets[i];
+      r.x += r.vx;
+      r.y += r.vy;
+      r.vy += gravity * DPR;
+
+      ctx.beginPath();
+      ctx.strokeStyle = r.col;
+      ctx.lineWidth = 1.25*DPR;
+      ctx.globalAlpha = 0.9;
+      ctx.moveTo(r.x, r.y);
+      ctx.lineTo(r.x - r.vx*2, r.y - r.vy*2);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+
+      if(r.vy > -1*DPR || r.y < H*0.22){
+        explode(r.x, r.y, r.col, r.power);
+        if(Math.random()<0.35) heart(r.x, r.y);
+        rockets.splice(i,1);
+      }
+    }
+
+    for(let i=sparks.length-1;i>=0;i--){
+      const p = sparks[i];
+      p.age++;
+      p.vx *= air;
+      p.vy = p.vy*air + gravity*DPR;
+      p.x += p.vx;
+      p.y += p.vy;
+
+      p.trail.push([p.x,p.y]);
+      if(p.trail.length>10) p.trail.shift();
+
+      ctx.beginPath();
+      ctx.strokeStyle = p.col;
+      ctx.lineWidth = p.size;
+      const a = 1 - (p.age/p.life);
+      ctx.globalAlpha = clamp(a,0,1) * 0.92;
+      for(let t=0;t<p.trail.length-1;t++){
+        const [x1,y1]=p.trail[t], [x2,y2]=p.trail[t+1];
+        ctx.moveTo(x1,y1);
+        ctx.lineTo(x2,y2);
+      }
+      ctx.stroke();
+
+      if(p.tw && Math.random()<0.12){
+        ctx.globalAlpha = 0.85*ctx.globalAlpha;
+        ctx.fillStyle = '#fff';
+        ctx.beginPath();
+        ctx.arc(p.x,p.y, 2.2*DPR, 0, Math.PI*2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+
+      if(p.age >= p.life || p.y>H+60*DPR) sparks.splice(i,1);
+    }
+  }
+  loop();
+
+  // ===== UI actions =====
+  const floating = document.getElementById('floating');
+  function showFloating(){
+    floating.classList.add('show');
+    setTimeout(()=>floating.classList.remove('show'), 1200);
+  }
+
+  function megaShow(x, y){
+    const burst = Math.floor(rnd(6, 10));
+    for(let i=0;i<burst;i++){
+      rocket(x + rnd(-160,160)*DPR, y, rnd(1.15, 1.75));
+    }
+    if(Math.random()<0.8) explode(x, H*0.72, '#ffd36a', 1.15);
+    if(Math.random()<0.75) nameBurst(innerWidth*0.5*DPR, H*0.38);
+    showFloating();
+  }
+
+  document.getElementById('surpriseBtn').addEventListener('click', ()=>{
+    const x = (innerWidth*0.5 + rnd(-120,120)) * DPR;
+    megaShow(x, H*0.98);
+  });
+
+  canvas.addEventListener('pointerdown', (e)=>{
+    const x = e.clientX * DPR;
+    megaShow(x, H*0.98);
+  });
+
+  document.getElementById('muteBtn').addEventListener('click', (e)=>{
+    audioOn = !audioOn;
+    e.target.textContent = '声音：' + (audioOn ? '开' : '关');
+    if(audioOn) ping(660,0.06);
+  });
+
+  document.getElementById('themeBtn').addEventListener('click', ()=>{
+    palette = palettes[(palettes.indexOf(palette)+1) % palettes.length];
+    ping(740,0.06);
+    rocket(innerWidth*DPR*rnd(0.3,0.7), H*0.98, 1.3);
+  });
+
+  // Auto show once after load (a small surprise)
+  setTimeout(()=>megaShow(innerWidth*0.5*DPR, H*0.98), 600);
+
+})();
+</script>
+</body>
+</html>
